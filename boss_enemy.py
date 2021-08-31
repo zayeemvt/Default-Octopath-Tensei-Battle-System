@@ -11,34 +11,45 @@ The boss has no HP and instead keeps a rolling counter of how much damage was do
 
 from elements import DamageElement
 from elements import GuardElement
+from elements import element_abbrvs
 from random import shuffle
 from random import randint
 
+# Weakness multipliers
 VULN_MULT = 4
 WEAK_MULT = 2
 NORM_MULT = 1
 RES_MULT = 0.5
 RPL_MULT = -1
 
+# Damage variance ranges
+LOWER_RAND = -150
+UPPER_RAND = 350
+
 class Boss():
     def __init__(self):
         self.damageCounter = 0
         self.weaknesses = [VULN_MULT, WEAK_MULT, WEAK_MULT, WEAK_MULT, NORM_MULT, NORM_MULT, NORM_MULT, NORM_MULT, RES_MULT, RES_MULT, RES_MULT, RPL_MULT]
-        self.weakReveal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self.attackType = GuardElement.PHYSICAL
+        self.weakReveal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # determines which elements have been hit/revealed
+        self.attackType = GuardElement.PHYSICAL # determines what type of attack the boss will use
+        self.damage_dict = { VULN_MULT : "Vulnerable! ", WEAK_MULT : "Weak! ", NORM_MULT : "",
+                            RES_MULT : "Resisted! " , RPL_MULT : "Repelled! "} # mapping to damage messages
+        self.weakness_dict = {VULN_MULT : "VUL", WEAK_MULT : "WEA", NORM_MULT : "NOR", RES_MULT : "RES", RPL_MULT : "RPL"} # mapping to weakness display
 
         shuffle(self.weaknesses)
 
     def takeDamage(self, damage, element):
+        # Use multipliers to modify damage, except when damage is repelled
         calculatedDamage = (damage * self.weaknesses[element]) if (self.weaknesses[element] != RPL_MULT) else 0
+
         if calculatedDamage != 0:
-            calculatedDamage = calculatedDamage + randint(-150, 350)
+            calculatedDamage = calculatedDamage + randint(LOWER_RAND, UPPER_RAND)
             self.damageCounter = self.damageCounter + calculatedDamage
+        
+        # Indicate that element has been revealed
         self.weakReveal[element] = 1
 
-        damage_dict = { VULN_MULT : "Vulnerable! ", WEAK_MULT : "Weak! ", NORM_MULT : "", RES_MULT : "Resisted! " , RPL_MULT : "Repelled! "}
-
-        return damage_dict[self.weaknesses[element]], calculatedDamage
+        return self.damage_dict[self.weaknesses[element]], calculatedDamage
 
     def determineAttackType(self):
         self.attackType = randint(GuardElement.PHYSICAL, GuardElement.MAGICAL)
@@ -49,18 +60,16 @@ class Boss():
     def shuffleWeaknesses(self):
         shuffle(self.weaknesses)
 
-        self.weakReveal = [0 for i in self.weakReveal]
+        self.weakReveal = [0 for i in self.weakReveal] # reset reveal list
 
     def displayWeaknesses(self):
         values = ""
-        text = ["SWD", "LNC", "AXE", "BOW", "DAG", "STA", "FIR", "WAT", "WND", "EAR", "LIG", "SHD"]
         display = ""
 
-        weakness_dict = {VULN_MULT : "VUL", WEAK_MULT : "WEA", NORM_MULT : "NOR", RES_MULT : "RES", RPL_MULT : "RPL"}
-
         for type in DamageElement:
-            values = values + (weakness_dict[self.weaknesses[type]] if self.weakReveal[type] == 1 else " ? ") + " "
-            display = display + text[type] + " "
+            # Replace weakness multiplier with weakness label if revealed, otherwise display weakness as unknown
+            values = values + (self.weakness_dict[self.weaknesses[type]] if self.weakReveal[type] == 1 else " ? ") + " "
+            display = display + element_abbrvs[type] + " " # add element abbreviation to display string
 
         display = values + "\n" + display
         

@@ -2,13 +2,14 @@
 
 elements.py
 
-A file that contains enums for the various elements used in this game.
-These are used as quick indices for lists and arrays.
+A file that contains enums and lists for the various elements used in this game.
+These are used as quick indices for lists and maps.
 
 """
 
 from enum import IntEnum
 
+# Enumeration for boss weakness types
 class DamageElement(IntEnum):
     # Physical elements
     SWORD = 0
@@ -26,6 +27,19 @@ class DamageElement(IntEnum):
     LIGHT = 10
     SHADOW = 11
 
+# Enumeration for boss attack types
 class GuardElement(IntEnum):
     PHYSICAL = 0
     MAGICAL = 1
+    
+element_abbrvs = ["SWD", "LNC", "AXE", "BOW", "DAG", "STA", "FIR", "WAT", "WND", "EAR", "LIG", "SHD"] # abbreviations for elements
+
+# Input to element mapping
+attack_dict = {"sword" : DamageElement.SWORD, "lance" : DamageElement.LANCE, "axe" : DamageElement.AXE,
+                "bow" : DamageElement.BOW, "dagger" : DamageElement.DAGGER, "staff" : DamageElement.STAFF,
+                "fire" : DamageElement.FIRE, "water" : DamageElement.WATER, "wind" : DamageElement.WIND,
+                "earth" : DamageElement.EARTH, "light" : DamageElement.LIGHT, "shadow" : DamageElement.SHADOW,
+                "swd" : DamageElement.SWORD, "lnc" : DamageElement.LANCE,
+                "dag" : DamageElement.DAGGER, "sta" : DamageElement.STAFF,
+                "fir" : DamageElement.FIRE, "wat" : DamageElement.WATER, "wnd" : DamageElement.WIND,
+                "ear" : DamageElement.EARTH, "lig" : DamageElement.LIGHT, "shd" : DamageElement.SHADOW}
