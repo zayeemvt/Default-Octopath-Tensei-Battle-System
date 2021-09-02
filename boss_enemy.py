@@ -26,15 +26,18 @@ RPL_MULT = -1
 LOWER_RAND = -150
 UPPER_RAND = 350
 
+# Dictionaries
+damage_dict = { VULN_MULT : "Vulnerable! ", WEAK_MULT : "Weak! ", NORM_MULT : "",
+                RES_MULT : "Resisted! " , RPL_MULT : "Repelled! "} # mapping to damage messages
+weakness_dict = {VULN_MULT : "VUL", WEAK_MULT : "WEA", NORM_MULT : "NOR",
+                 RES_MULT : "RES", RPL_MULT : "RPL"} # mapping to weakness display
+
 class Boss():
     def __init__(self):
         self.damageCounter = 0
         self.weaknesses = [VULN_MULT, WEAK_MULT, WEAK_MULT, WEAK_MULT, NORM_MULT, NORM_MULT, NORM_MULT, NORM_MULT, RES_MULT, RES_MULT, RES_MULT, RPL_MULT]
         self.weakReveal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # determines which elements have been hit/revealed
         self.attackType = GuardElement.PHYSICAL # determines what type of attack the boss will use
-        self.damage_dict = { VULN_MULT : "Vulnerable! ", WEAK_MULT : "Weak! ", NORM_MULT : "",
-                            RES_MULT : "Resisted! " , RPL_MULT : "Repelled! "} # mapping to damage messages
-        self.weakness_dict = {VULN_MULT : "VUL", WEAK_MULT : "WEA", NORM_MULT : "NOR", RES_MULT : "RES", RPL_MULT : "RPL"} # mapping to weakness display
 
         shuffle(self.weaknesses)
 
@@ -49,7 +52,7 @@ class Boss():
         # Indicate that element has been revealed
         self.weakReveal[element] = 1
 
-        return self.damage_dict[self.weaknesses[element]], calculatedDamage
+        return damage_dict[self.weaknesses[element]], calculatedDamage
 
     def determineAttackType(self):
         self.attackType = randint(GuardElement.PHYSICAL, GuardElement.MAGICAL)
@@ -68,7 +71,7 @@ class Boss():
 
         for type in DamageElement:
             # Replace weakness multiplier with weakness label if revealed, otherwise display weakness as unknown
-            values = values + (self.weakness_dict[self.weaknesses[type]] if self.weakReveal[type] == 1 else " ? ") + " "
+            values = values + (weakness_dict[self.weaknesses[type]] if self.weakReveal[type] == 1 else " ? ") + " "
             display = display + element_abbrvs[type] + " " # add element abbreviation to display string
 
         display = values + "\n" + display
