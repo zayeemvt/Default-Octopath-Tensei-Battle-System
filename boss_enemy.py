@@ -27,8 +27,7 @@ LOWER_RAND = -150
 UPPER_RAND = 350
 
 # Dictionaries
-damage_dict = { VULN_MULT : "Vulnerable! ", WEAK_MULT : "Weak! ", NORM_MULT : "",
-                RES_MULT : "Resisted! " , RPL_MULT : "Repelled! "} # mapping to damage messages
+mult_dict = { VULN_MULT : "vuln", WEAK_MULT : "weak", NORM_MULT : "norm", RES_MULT : "res", RPL_MULT : "rpl"}
 weakness_dict = {VULN_MULT : "VUL", WEAK_MULT : "WEA", NORM_MULT : "NOR",
                  RES_MULT : "RES", RPL_MULT : "RPL"} # mapping to weakness display
 
@@ -39,11 +38,13 @@ class Boss():
         self.weakReveal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # determines which elements have been hit/revealed
         self.attackType = GuardElement.PHYSICAL # determines what type of attack the boss will use
 
-        shuffle(self.weaknesses)
+        self.shuffleWeaknesses()
 
     def takeDamage(self, damage, element):
-        # Use multipliers to modify damage, except when damage is repelled
-        calculatedDamage = (damage * self.weaknesses[element]) if (self.weaknesses[element] != RPL_MULT) else 0
+        multiplier = self.weaknesses[element]
+
+        # Use multiplier to modify damage, except when damage is repelled
+        calculatedDamage = (damage * multiplier) if (multiplier != RPL_MULT) else 0
 
         if calculatedDamage != 0:
             calculatedDamage = calculatedDamage + randint(LOWER_RAND, UPPER_RAND)
@@ -52,7 +53,7 @@ class Boss():
         # Indicate that element has been revealed
         self.weakReveal[element] = 1
 
-        return damage_dict[self.weaknesses[element]], calculatedDamage
+        return mult_dict[multiplier], calculatedDamage
 
     def determineAttackType(self):
         self.attackType = randint(GuardElement.PHYSICAL, GuardElement.MAGICAL)
@@ -80,4 +81,4 @@ class Boss():
 
 
     def __str__(self) -> str:
-        return "Damage: " + str(self.damageCounter) + "\n" + self.displayWeaknesses() + "\n"
+        return "Damage: %d" % (self.damageCounter) + "\n" + self.displayWeaknesses() + "\n"
