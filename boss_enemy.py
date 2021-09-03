@@ -9,7 +9,7 @@ The boss has no HP and instead keeps a rolling counter of how much damage was do
 
 """
 
-from elements import DamageElement, GuardElement, element_abbrvs
+from elements import DamageElement, element_abbrvs
 from random import shuffle, randint
 
 # Weakness multipliers
@@ -45,7 +45,7 @@ class Boss():
         self.damageCounter = self.damageCounter + damage
 
     def determineAttackType(self):
-        return randint(GuardElement.PHYSICAL, GuardElement.MAGICAL)
+        return randint(DamageElement.PHYSICAL, DamageElement.MAGICAL)
 
     def attack(self):
         return self.attackType
@@ -60,9 +60,10 @@ class Boss():
         display = ""
 
         for type in DamageElement:
-            # Replace weakness multiplier with weakness label if revealed, otherwise display weakness as unknown
-            values = values + (weakness_dict[self.weaknesses[type]] if self.weakReveal[type] == 1 else " ? ") + " "
-            display = display + element_abbrvs[type] + " " # add element abbreviation to display string
+            if (type < DamageElement.PHYSICAL): # ignore guards and heal
+                # Replace weakness multiplier with weakness label if revealed, otherwise display weakness as unknown
+                values = values + (weakness_dict[self.weaknesses[type]] if self.weakReveal[type] == 1 else " ? ") + " "
+                display = display + element_abbrvs[type] + " " # add element abbreviation to display string
 
         display = values + "\n" + display
         

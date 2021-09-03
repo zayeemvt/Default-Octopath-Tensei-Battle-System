@@ -16,17 +16,32 @@ if __name__ == '__main__':
     game = Battle()
 
     displayOutput("Turn: %d" % (game.turncount))
+    displayOutput(game.player)
     displayOutput(game.enemy)
 
     while True:
-        command = getInput("Command: ").lower().strip()
-        attack = attack_dict.get(command)
+        if (game.player.ko == True):
+            game.process()
+            continue
 
-        if attack == None:
-            if command == "end":
-                displayOutput("Final damage count: %d" % game.enemy.damageCounter)
-                break
+        command = parseCommand(getInput("Command: "))
+
+        if command == "end":
+            displayOutput("Final damage count: %d" % game.enemy.damageCounter)
+            break
+
+        elif command == "attack":
+            if len(game.player.action_queue) == 0:
+                displayOutput("No actions registered.")
             else:
-                displayOutput("Bad input")
+                game.process()
+
+        elif command in attack_dict:
+            if len(game.player.action_queue) == game.player.battle_points:
+                displayOutput("Maximum actions registered.")
+            else:
+                game.registerAction(attack_dict[command])
+                displayOutput("Action registered.")
+
         else:
-            game.process(attack)
+            displayOutput("Bad input")

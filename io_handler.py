@@ -6,11 +6,24 @@ The module for facilitating input/output through either the console or the Disco
 
 """
 
+from elements import DamageElement, attack_dict
+
+command_list = [ "end", "attack" ]
+
 def getInput(text = ""):
     return input(text)
 
 def displayOutput(text):
     print(text)
+
+def parseCommand(command):
+    command.lower().strip()
+
+    if (command in attack_dict) or (command in command_list):
+        return command
+    else:
+        return "invalid"
+
 
 def helpMenu():
     print("\n===================================================")
