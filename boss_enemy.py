@@ -9,22 +9,15 @@ The boss has no HP and instead keeps a rolling counter of how much damage was do
 
 """
 
-from elements import DamageElement
-from elements import GuardElement
-from elements import element_abbrvs
-from random import shuffle
-from random import randint
+from elements import DamageElement, GuardElement, element_abbrvs
+from random import shuffle, randint
 
 # Weakness multipliers
 VULN_MULT = 4
 WEAK_MULT = 2
 NORM_MULT = 1
 RES_MULT = 0.5
-RPL_MULT = -1
-
-# Damage variance ranges
-LOWER_RAND = -150
-UPPER_RAND = 350
+RPL_MULT = 0
 
 # Dictionaries
 mult_dict = { VULN_MULT : "vuln", WEAK_MULT : "weak", NORM_MULT : "norm", RES_MULT : "res", RPL_MULT : "rpl"}
@@ -36,27 +29,23 @@ class Boss():
         self.damageCounter = 0
         self.weaknesses = [VULN_MULT, WEAK_MULT, WEAK_MULT, WEAK_MULT, NORM_MULT, NORM_MULT, NORM_MULT, NORM_MULT, RES_MULT, RES_MULT, RES_MULT, RPL_MULT]
         self.weakReveal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # determines which elements have been hit/revealed
-        self.attackType = GuardElement.PHYSICAL # determines what type of attack the boss will use
 
         self.shuffleWeaknesses()
 
-    def takeDamage(self, damage, element):
-        multiplier = self.weaknesses[element]
-
-        # Use multiplier to modify damage, except when damage is repelled
-        calculatedDamage = (damage * multiplier) if (multiplier != RPL_MULT) else 0
-
-        if calculatedDamage != 0:
-            calculatedDamage = calculatedDamage + randint(LOWER_RAND, UPPER_RAND)
-            self.damageCounter = self.damageCounter + calculatedDamage
-        
+    def checkWeakness(self, element):
         # Indicate that element has been revealed
         self.weakReveal[element] = 1
 
-        return mult_dict[multiplier], calculatedDamage
+        multiplier = self.weaknesses[element]
+
+        # Return multiplier and status message
+        return multiplier, mult_dict[multiplier]
+
+    def takeDamage(self, damage):
+        self.damageCounter = self.damageCounter + damage
 
     def determineAttackType(self):
-        self.attackType = randint(GuardElement.PHYSICAL, GuardElement.MAGICAL)
+        return randint(GuardElement.PHYSICAL, GuardElement.MAGICAL)
 
     def attack(self):
         return self.attackType
@@ -81,4 +70,4 @@ class Boss():
 
 
     def __str__(self) -> str:
-        return "Damage: %d" % (self.damageCounter) + "\n" + self.displayWeaknesses() + "\n"
+        return "Enemy Damage: %d" % (self.damageCounter) + "\n" + self.displayWeaknesses() + "\n"
