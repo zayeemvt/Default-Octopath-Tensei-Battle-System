@@ -51,45 +51,62 @@ class Battle():
         enemy = self.enemy
         player = self.player
 
+        ko_this_turn = False
+
         # Player Phase
         while len(player.action_queue) > 0:
             player.useBP()
             action = player.action_queue.pop(0)
-            if (action < DamageElement.PHYSICAL):
+
+            if (action < DamageElement.PHYSICAL): # Player is attacking
                 multiplier, attack_status = enemy.checkWeakness(action)
+                
                 if (attack_status == "rpl"):
                     damage = calculateDamage(1)
                     player.takeDamage(damage)
                     displayOutput(damage_dict[attack_status] + "Player takes %d damage" % damage)
+
+                    if (player.ko == True):
+                        player.action_queue.clear()
+                        ko_this_turn = True
                 else:
                     damage = calculateDamage(multiplier)
                     enemy.takeDamage(damage)
                     displayOutput(damage_dict[attack_status] + "Enemy takes %d damage" % damage)
-            elif (action < DamageElement.HEAL):
+            
+            elif (action < DamageElement.HEAL): # Player is guarding
                 player.useGuard(action)
-            else:
+            
+            else: # Player is healing
                 heal = calculateHeal(1)
                 player.restoreHealth(heal)
                 displayOutput("Player restored %d health" % heal)
 
         # Enemy Phase
-        element = enemy.determineAttackType() # choose enemy attack type
-        defend_status = player.checkGuardStatus(element)
-        if defend_status == "hit":
-            damage = calculateDamage(1)
-            player.takeDamage(damage)
-            displayOutput("Player takes %d damage" % damage)
-        elif defend_status == "repelled":
-            damage = calculateDamage(1)
-            enemy.takeDamage(damage)
-            displayOutput("Repelled! Enemy takes %d damage" % damage)
+        if (player.ko == False): # If player dies from repel, don't bother with enemy turn
+            element = enemy.determineAttackType() # choose enemy attack type
+            defend_status = player.checkGuardStatus(element)
+            if defend_status == "hit":
+                damage = calculateDamage(1)
+                player.takeDamage(damage)
+                displayOutput("Player takes %d damage" % damage)
+
+                if (player.ko == True):
+                    ko_this_turn = True
+            elif defend_status == "repelled":
+                damage = calculateDamage(1)
+                enemy.takeDamage(damage)
+                displayOutput("Repelled! Enemy takes %d damage" % damage)
         
         player.removeGuard()
 
-        if player.ko != True:
+        if player.ko != True: # Restore BP when player is alive
             player.replenishBP()
         else:
-            displayOutput("Defeated! Player will revive next turn.")
+            if (ko_this_turn == False): # Player is dead, but didn't die on this turn
+                player.revive()
+            else:
+                displayOutput("Defeated! Player will revive next turn.")
 
         self.turncount = self.turncount + 1
 
@@ -97,6 +114,7 @@ class Battle():
             enemy.shuffleWeaknesses()
             displayOutput("The boss's elements have changed!")
 
+        print("\n===================================================")
         displayOutput("Turn: %d" % self.turncount)
         displayOutput(player)
         displayOutput(enemy)

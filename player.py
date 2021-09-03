@@ -22,15 +22,10 @@ class Player():
         self.ko = False
 
     def checkGuardStatus(self, element):
-        if not self.ko:
-            if (element in self.guard):
-                return "repelled"
-            else:
-                return "hit"
+        if (element in self.guard):
+            return "repelled"
         else:
-            self.ko = False
-            self.health = MAX_HEALTH
-            return "reviving"
+            return "hit"
 
     def useGuard(self, element):
         self.guard.append(element)
@@ -49,6 +44,10 @@ class Player():
         self.health = self.health + heal
         if self.health > MAX_HEALTH:
             self.health = MAX_HEALTH
+
+    def revive(self):
+        self.ko = False
+        self.health = MAX_HEALTH
 
     def replenishBP(self):
         self.battle_points = self.battle_points + BP_RATE

@@ -17,7 +17,7 @@ def displayOutput(text):
     print(text)
 
 def parseCommand(command):
-    command.lower().strip()
+    command = command.lower().strip()
 
     if (command in attack_dict) or (command in command_list):
         return command
