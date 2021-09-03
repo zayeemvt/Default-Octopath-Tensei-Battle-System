@@ -28,7 +28,11 @@ class Player():
             return "hit"
 
     def useGuard(self, element):
-        self.guard.append(element)
+        if (element not in self.guard):
+            self.guard.append(element)
+            return True
+        else:
+            return False
         
     def removeGuard(self):
         if DamageElement.PHYSICAL in self.guard: self.guard.remove(DamageElement.PHYSICAL)
@@ -54,6 +58,9 @@ class Player():
 
     def useBP(self):
         self.battle_points = self.battle_points - 1
+
+    def refundBP(self, amount):
+        self.battle_points = self.battle_points + amount
 
     def queueAction(self, action):
         self.action_queue.append(action)

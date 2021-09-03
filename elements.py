@@ -31,16 +31,11 @@ class DamageElement(IntEnum):
     PHYSICAL = 20
     MAGICAL = 21
     HEAL = 30
-
-# Enumeration for boss attack types
-# class GuardElement(IntEnum):
-#     PHYSICAL = 0
-#     MAGICAL = 1
     
 element_abbrvs = ["SWD", "LNC", "AXE", "BOW", "DAG", "STA", "FIR", "WAT", "WND", "EAR", "LIG", "SHD"] # abbreviations for elements
 
 # Input to element mapping
-attack_dict = {"sword" : DamageElement.SWORD, "lance" : DamageElement.LANCE, "axe" : DamageElement.AXE,
+action_dict = {"sword" : DamageElement.SWORD, "lance" : DamageElement.LANCE, "axe" : DamageElement.AXE,
                 "bow" : DamageElement.BOW, "dagger" : DamageElement.DAGGER, "staff" : DamageElement.STAFF,
                 "fire" : DamageElement.FIRE, "water" : DamageElement.WATER, "wind" : DamageElement.WIND,
                 "earth" : DamageElement.EARTH, "light" : DamageElement.LIGHT, "shadow" : DamageElement.SHADOW,
